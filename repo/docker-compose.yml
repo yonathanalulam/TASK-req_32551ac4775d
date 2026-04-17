@@ -1,0 +1,86 @@
+# Meridian single-host offline composition. No external network pulls beyond initial
+# image acquisition. All runtime traffic is contained within this project network.
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: meridian_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-meridian_root}
+      MYSQL_DATABASE: ${DB_DATABASE:-meridian}
+      MYSQL_USER: ${DB_USERNAME:-meridian}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-meridian_pass}
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-name-resolve
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - meridian_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_ROOT_PASSWORD:-meridian_root}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: meridian_app:latest
+    container_name: meridian_app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-meridian}
+      DB_USERNAME: ${DB_USERNAME:-meridian}
+      DB_PASSWORD: ${DB_PASSWORD:-meridian_pass}
+      APP_MASTER_KEY: ${APP_MASTER_KEY}
+      APP_MASTER_KEY_VERSION: ${APP_MASTER_KEY_VERSION:-1}
+      APP_TIMEZONE: ${APP_TIMEZONE:-UTC}
+    volumes:
+      - ./storage:/var/www/app/storage
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    networks:
+      - meridian_net
+
+  scheduler:
+    image: meridian_app:latest
+    container_name: meridian_scheduler
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-meridian}
+      DB_USERNAME: ${DB_USERNAME:-meridian}
+      DB_PASSWORD: ${DB_PASSWORD:-meridian_pass}
+      APP_MASTER_KEY: ${APP_MASTER_KEY}
+      APP_MASTER_KEY_VERSION: ${APP_MASTER_KEY_VERSION:-1}
+      APP_TIMEZONE: ${APP_TIMEZONE:-UTC}
+    volumes:
+      - ./storage:/var/www/app/storage
+    networks:
+      - meridian_net
+    command: ["php", "/var/www/app/scripts/scheduler_loop.php"]
+
+networks:
+  meridian_net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

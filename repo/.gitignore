@@ -1,0 +1,16 @@
+/vendor/
+/node_modules/
+.env
+.env.local
+.phpunit.result.cache
+/storage/logs/*.log
+/storage/exports/*
+/storage/reports/*
+/storage/metrics/*
+!/storage/logs/.gitkeep
+!/storage/exports/.gitkeep
+!/storage/reports/.gitkeep
+!/storage/metrics/.gitkeep
+.idea/
+.vscode/
+*.swp
