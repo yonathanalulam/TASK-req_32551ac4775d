@@ -5,6 +5,5 @@
   "frontend_language": "none",
   "backend_language": "PHP",
   "database": "MySQL",
-  "backend_framework": "Slim",
-  "orm": "Eloquent"
+  "backend_framework": "Slim"
 }
