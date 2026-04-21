@@ -1,4 +1,4 @@
-# Static Delivery Acceptance and Project Architecture Audit (Regenerated)
+# Static Delivery Acceptance and Project Architecture Audit
 
 ## 1. Verdict
 - Overall conclusion: **Partial Pass**
@@ -165,5 +165,4 @@
 - Uncovered/weak point: static unit test integrity issue in `SlaDeadlineTest` means some intended coverage can fail before execution.
 
 ## 9. Final Notes
-- Regenerated report reflects current repository state after your changes and supersedes prior conclusions about missing signup/moderation/idempotency enforcement.
 - Main remaining actionable issue is test-suite integrity drift in the SLA unit test constructor usage.
