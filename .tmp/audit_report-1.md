@@ -1,8 +1,7 @@
-# Delivery Acceptance and Project Architecture Audit (Static-Only, Regenerated)
+# Delivery Acceptance and Project Architecture Audit (Static-Only)
 
 ## 1. Verdict
 - Overall conclusion: **Partial Pass**
-- Major previously-blocking areas are now implemented (object-level policy layer, automated moderation wiring, parse response contract, integration test suite).
 - Remaining material risk: protected analytics views still appear permission-only (not object/scope-constrained), which conflicts with prompt intent for object-level authorization on protected analytics views.
 
 ## 2. Scope and Static Verification Boundary
@@ -150,5 +149,4 @@ Major core and risk paths now have static test evidence, especially around prior
 
 ## 9. Final Notes
 - This report is static-only; no runtime behavior or performance claim is asserted.
-- Compared with the previous audit, implementation quality and acceptance fit improved materially.
 - Priority next step: close analytics object-level authorization/scope gap and add corresponding integration tests.
